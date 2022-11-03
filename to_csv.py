@@ -13,7 +13,7 @@ parser.add_argument("-f", "--file", required=True, help="Chemin du fichier XML d
 parser.add_argument("-o", "--output_name", required=True, help="Nom du fichier de sortie CSV")
 args = parser.parse_args()
 
-cols = ["col", "alias"]
+cols = ["col", "type", "alias", "liste_valeurs"]
 rows = []
 
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd', 'gco': 'http://www.isotc211.org/2005/gco' }
@@ -24,8 +24,19 @@ nodes = root.findall('gmd:contentInfo/gmd:MD_FeatureCatalogue/gmd:featureCatalog
 for i in nodes:
     column_name = i.find('gmd:FC_FeatureAttribute/gmd:memberName', namespaces).text
     column_alias = i.find('gmd:FC_FeatureAttribute/gmd:definition/gco:CharacterString', namespaces).text
-    rows.append({"col": column_name,
-                 "alias": column_alias })
+    column_type = i.find('gmd:FC_FeatureAttribute/gmd:valueType/gco:TypeName/gco:aName/gco:CharacterString', namespaces).text
+    if i.find('gmd:FC_FeatureAttribute/gmd:listedValue', namespaces):
+        column_list_values = []
+        for v in i.findall('gmd:FC_FeatureAttribute/gmd:listedValue', namespaces):
+            column_list_values.append(v.find('gmd:FC_ListedValue/gmd:code/gco:CharacterString', namespaces).text + ' : ' + v.find('gmd:FC_ListedValue/gmd:label/gco:CharacterString', namespaces).text)
+    else:
+        column_list_values = ''
+    rows.append({ 
+        "col": column_name,
+        "type": column_type,
+        "alias": column_alias,
+        "liste_valeurs": column_list_values 
+    })
 df = pd.DataFrame(rows, columns=cols)
 df.to_csv(args.output_name, sep=";", header=True, encoding='utf-8')
 
