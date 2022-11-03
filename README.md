@@ -5,6 +5,9 @@ Manipulation de fichiers XML (iso19139)
 ## to_csv
 
 Transforme un export XML des métadonnées (iso19139) en CSV
+*Le format iso19139 est accessible depuis l'export ZIP d'une fiche de métadonnées*
+
+En savoir plus sur la norme ISO/TS 19139:2007 : https://www.iso.org/fr/standard/32557.html
 
 ### Aide
 
