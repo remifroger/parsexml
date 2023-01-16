@@ -19,12 +19,17 @@ else:
 parser = argparse.ArgumentParser(description='XML to CSV')
 parser.add_argument("-f", "--file", required=True, help="Chemin du fichier XML de métadonnées GeoNetwork")
 parser.add_argument("-o", "--output_name", required=True, help="Nom du fichier de sortie CSV")
+parser.add_argument("-d", "--domain", required=False, help="Si vous souhaitez exporter les domaines")
 args = parser.parse_args()
 
 print("Fichier : {0}".format(args.file))
 
-cols = ["col", "type", "alias", "liste_valeurs"]
-rows = []
+if (args.domain):
+    cols = ["SHORT_NAME", "DESCRIPTION", "TYPE", "DOMAINES"]
+    rows = []
+else:
+    cols = ["SHORT_NAME", "DESCRIPTION", "TYPE"]
+    rows = []
 
 namespaces = {'gmd': 'http://www.isotc211.org/2005/gmd', 'gco': 'http://www.isotc211.org/2005/gco' }
 ### XML method
@@ -41,15 +46,22 @@ for i in nodes:
             column_list_values.append(v.find('gmd:FC_ListedValue/gmd:code/gco:CharacterString', namespaces).text + ' : ' + v.find('gmd:FC_ListedValue/gmd:label/gco:CharacterString', namespaces).text)
     else:
         column_list_values = ''
-    rows.append({ 
-        "col": column_name,
-        "type": column_type,
-        "alias": column_alias,
-        "liste_valeurs": column_list_values 
-    })
+    if (args.domain):
+        rows.append({ 
+            "SHORT_NAME": column_name,
+            "DESCRIPTION": column_type,
+            "TYPE": column_alias,
+            "DOMAINES": column_list_values 
+        })
+    else:
+        rows.append({ 
+            "SHORT_NAME": column_name,
+            "DESCRIPTION": column_type,
+            "TYPE": column_alias,
+        })
     print('Ecriture de la colonne {0}'.format(column_name))
 df = pd.DataFrame(rows, columns=cols)
-df.to_csv(args.output_name, sep=";", header=True, encoding='utf-8')
+df.to_csv(args.output_name, sep=";", header=True, encoding='utf-8', index=False)
 
 print('Terminé, métadonnées enregistrées dans {0}'.format(args.output_name))
 
