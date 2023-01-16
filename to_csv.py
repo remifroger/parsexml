@@ -46,7 +46,7 @@ for i in nodes:
             column_list_values.append(v.find('gmd:FC_ListedValue/gmd:code/gco:CharacterString', namespaces).text + ' : ' + v.find('gmd:FC_ListedValue/gmd:label/gco:CharacterString', namespaces).text)
     else:
         column_list_values = ''
-    if (args.domain):
+    if (args.domain == True):
         rows.append({ 
             "SHORT_NAME": column_name,
             "DESCRIPTION": column_type,
