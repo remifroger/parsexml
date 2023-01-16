@@ -6,7 +6,15 @@
 
 import xml.etree.ElementTree as Xet
 import pandas as pd
-import argparse, os
+import argparse, os, sys
+
+if not sys.version_info.major == 3 and sys.version_info.minor >= 6:
+    print("Python 3.X ou plus est requis")
+    print("Vous utilisez la version {}.{}".format(sys.version_info.major, sys.version_info.minor))
+    sys.exit(1)
+else:
+    print("Vous utilisez la version {}.{}".format(sys.version_info.major, sys.version_info.minor))
+    print('Lancement')
 
 parser = argparse.ArgumentParser(description='XML to CSV')
 parser.add_argument("-f", "--file", required=True, help="Chemin du fichier XML de métadonnées GeoNetwork")
@@ -37,8 +45,11 @@ for i in nodes:
         "alias": column_alias,
         "liste_valeurs": column_list_values 
     })
+    print('Ecriture de la colonne {0}'.format(column_name))
 df = pd.DataFrame(rows, columns=cols)
 df.to_csv(args.output_name, sep=";", header=True, encoding='utf-8')
+
+print('Terminé')
 
 """
 # JSON method
