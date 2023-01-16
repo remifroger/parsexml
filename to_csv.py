@@ -21,6 +21,8 @@ parser.add_argument("-f", "--file", required=True, help="Chemin du fichier XML d
 parser.add_argument("-o", "--output_name", required=True, help="Nom du fichier de sortie CSV")
 args = parser.parse_args()
 
+print("Fichier : {0}".format(args.file))
+
 cols = ["col", "type", "alias", "liste_valeurs"]
 rows = []
 
@@ -49,7 +51,7 @@ for i in nodes:
 df = pd.DataFrame(rows, columns=cols)
 df.to_csv(args.output_name, sep=";", header=True, encoding='utf-8')
 
-print('Terminé')
+print('Terminé, métadonnées enregistrées dans {0}'.format(args.output_name))
 
 """
 # JSON method
