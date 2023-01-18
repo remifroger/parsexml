@@ -25,8 +25,11 @@ args = parser.parse_args()
 print("Fichier : {0}".format(args.file))
 
 if (args.domain):
-    cols = ["SHORT_NAME", "DESCRIPTION", "TYPE", "DOMAINES"]
+    cols = ["SHORT_NAME", "DESCRIPTION", "TYPE"]
     rows = []
+    listDomaines = {}
+    domainesCols = ["LABEL", "CODE", "DEFINITION"]
+    domainesRows = []
 else:
     cols = ["SHORT_NAME", "DESCRIPTION", "TYPE"]
     rows = []
@@ -40,18 +43,26 @@ for i in nodes:
     column_name = i.find('gmd:FC_FeatureAttribute/gmd:memberName', namespaces).text
     column_alias = i.find('gmd:FC_FeatureAttribute/gmd:definition/gco:CharacterString', namespaces).text
     column_type = i.find('gmd:FC_FeatureAttribute/gmd:valueType/gco:TypeName/gco:aName/gco:CharacterString', namespaces).text
-    if i.find('gmd:FC_FeatureAttribute/gmd:listedValue', namespaces):
+    if i.find('gmd:FC_FeatureAttribute/gmd:listedValue', namespaces) and args.domain == "true":
         column_list_values = []
+        listDomaines[column_name] = []
         for v in i.findall('gmd:FC_FeatureAttribute/gmd:listedValue', namespaces):
             column_list_values.append(v.find('gmd:FC_ListedValue/gmd:code/gco:CharacterString', namespaces).text + ' : ' + v.find('gmd:FC_ListedValue/gmd:label/gco:CharacterString', namespaces).text)
+            column_domaine_code = v.find('gmd:FC_ListedValue/gmd:code/gco:CharacterString', namespaces).text 
+            column_domaine_val = v.find('gmd:FC_ListedValue/gmd:label/gco:CharacterString', namespaces).text
+            listDomaines[column_name].append({ 
+                "LABEL": column_domaine_code,
+                "CODE": column_domaine_val,
+                "DEFINITION": ''
+            })
     else:
         column_list_values = ''
-    if (args.domain == True):
+    if (args.domain == "true"):
         rows.append({ 
             "SHORT_NAME": column_name,
             "DESCRIPTION": column_type,
-            "TYPE": column_alias,
-            "DOMAINES": column_list_values 
+            "TYPE": column_alias
+            #"DOMAINES": column_list_values 
         })
     else:
         rows.append({ 
@@ -60,6 +71,11 @@ for i in nodes:
             "TYPE": column_alias,
         })
     print('Ecriture de la colonne {0}'.format(column_name))
+dirOutput = os.path.dirname(args.output_name)
+if args.domain == "true":
+    for x, y in listDomaines.items():
+        fileName = "{0}.csv".format(x)
+        pd.DataFrame(y, columns=domainesCols).to_csv(os.path.join(dirOutput, fileName), sep=";", header=True, encoding='utf-8', index=False)
 df = pd.DataFrame(rows, columns=cols)
 df.to_csv(args.output_name, sep=";", header=True, encoding='utf-8', index=False)
 
