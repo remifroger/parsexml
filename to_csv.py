@@ -61,7 +61,7 @@ for i in nodes:
         rows.append({ 
             "SHORT_NAME": column_name,
             "DESCRIPTION": column_alias,
-            "TYPE": column_type
+            "TYPE": column_type,
             #"DOMAINES": column_list_values 
         })
     else:
