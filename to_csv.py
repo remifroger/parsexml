@@ -60,15 +60,15 @@ for i in nodes:
     if (args.domain == "true"):
         rows.append({ 
             "SHORT_NAME": column_name,
-            "DESCRIPTION": column_type,
-            "TYPE": column_alias
+            "DESCRIPTION": column_alias,
+            "TYPE": column_type
             #"DOMAINES": column_list_values 
         })
     else:
         rows.append({ 
             "SHORT_NAME": column_name,
-            "DESCRIPTION": column_type,
-            "TYPE": column_alias,
+            "DESCRIPTION": column_alias,
+            "TYPE": column_type
         })
     print('Ecriture de la colonne {0}'.format(column_name))
 dirOutput = os.path.dirname(args.output_name)
